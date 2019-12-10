@@ -1,0 +1,2 @@
+python-freeipa
+requests_kerberos
