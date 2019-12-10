@@ -6,8 +6,8 @@ Notify IPA Users for password expiration and locked users to admin
 ```pip install -r requirements.txt```
 3. Run with required parameters. 
 ```bash
-$ python ip_notify.py --help
-usage: ip_notify.py [-h] [--server SERVER] [--verify-ssl] [--no-verify-ssl]
+$ python ipa_notify.py --help
+usage: ipa_notify.py [-h] [--server SERVER] [--verify-ssl] [--no-verify-ssl]
                     [--admin ADMIN] [--keytab KEYTAB]
                     [--groups GROUPS [GROUPS ...]] [--limit LIMIT]
                     [--noop NOOP]
