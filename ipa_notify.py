@@ -46,10 +46,7 @@ for group in args.groups:
 		user = client.user_show(user)
 		lock_status = user['nsaccountlock']
 		if lock_status:
-			if not args.noop:
-				locked_users.append(user)
-			else:
-				print('user is locked %s' % user['uid'][0])
+			locked_users.append(user)
 
 		email = user['mail'][0]
 		password_expire_date = user['krbpasswordexpiration'][0]['__datetime__']
