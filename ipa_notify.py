@@ -16,12 +16,14 @@ parser.add_argument('--no-verify-ssl', dest='verify_ssl', action='store_false',
                     help='do not verify ipa connection SSL cert')
 parser.set_defaults(verify_ssl=True)
 
-parser.add_argument('--admin', type=str, default='admin@domain.com',
-                    help='admin user email to notify about locked users')
+parser.add_argument('--principal', type=str, default='admin@DOMAIN.COM',
+                    help='user principal for kerberos authentication')
 parser.add_argument('--keytab', type=str, default='/tmp/user.kt', help='keytab path')
 
 parser.add_argument('--groups', nargs='+', type=str, default=['users'], help='list of user groups to check')
 
+parser.add_argument('--admin', type=str, default='admin@domain.com',
+                    help='admin user email to notify about locked users')
 parser.add_argument('--limit', type=int, default=5, help='number of days before notifying a user')
 parser.add_argument('--noop', type=bool, default=False, help='no operation mode. Do not send emails')
 args = parser.parse_args()
@@ -31,7 +33,7 @@ limit_day = args.limit
 
 locked_users = []
 
-subprocess.call(('/usr/bin/kinit %s -k -t %s' % (args.admin, args.keytab)).split())
+subprocess.call(('/usr/bin/kinit %s -k -t %s' % (args.principal, args.keytab)).split())
 
 client = Client(args.server, version='2.215', verify_ssl=args.verify_ssl)
 client.login_kerberos()
