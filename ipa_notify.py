@@ -36,7 +36,11 @@ locked_users = []
 subprocess.call(('/usr/bin/kinit %s -k -t %s' % (args.principal, args.keytab)).split())
 
 client = Client(args.server, version='2.215', verify_ssl=args.verify_ssl)
-client.login_kerberos()
+try:
+	client.login_kerberos()
+except Unauthorized as e:
+	print(f"login denied: {str(e)}")
+
 for group in args.groups:
 	try:
 		group_info = client.group_show(group)
