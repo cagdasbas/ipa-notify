@@ -3,7 +3,7 @@ import datetime
 import subprocess
 
 from python_freeipa import Client
-from python_freeipa.exceptions import NotFound
+from python_freeipa.exceptions import NotFound, Unauthorized
 
 from helper import notify_expiration, notify_locked_users
 
@@ -21,10 +21,10 @@ parser.add_argument('--principal', type=str, default='admin@DOMAIN.COM',
 parser.add_argument('--keytab', type=str, default='/tmp/user.kt', help='keytab path')
 
 parser.add_argument('--groups', nargs='+', type=str, default=['users'], help='list of user groups to check')
+parser.add_argument('--limit', type=int, default=5, help='number of days before notifying a user')
 
 parser.add_argument('--admin', type=str, default='admin@domain.com',
                     help='admin user email to notify about locked users')
-parser.add_argument('--limit', type=int, default=5, help='number of days before notifying a user')
 parser.add_argument('--noop', type=bool, default=False, help='no operation mode. Do not send emails')
 args = parser.parse_args()
 
@@ -33,7 +33,7 @@ limit_day = args.limit
 
 locked_users = []
 
-subprocess.call(('/usr/bin/kinit %s -k -t %s' % (args.principal, args.keytab)).split())
+subprocess.call(f"/usr/bin/kinit {args.principal} -k -t {args.keytab}".split())
 
 client = Client(args.server, version='2.215', verify_ssl=args.verify_ssl)
 try:
@@ -45,7 +45,7 @@ for group in args.groups:
 	try:
 		group_info = client.group_show(group)
 	except NotFound as e:
-		print('no group named "%s"' % group)
+		print(f"no group named {group}")
 		continue
 
 	for user in group_info['member_user']:
@@ -62,10 +62,10 @@ for group in args.groups:
 			if not args.noop:
 				notify_expiration(email, password_expire_date, left_days)
 			else:
-				print('user %s expiration day left %d ' % (user['uid'][0], left_days))
+				print(f"user {user['uid'][0]} expiration day left {left_days}")
 
 if len(locked_users) != 0:
 	if not args.noop:
 		notify_locked_users(admin_mail, locked_users)
 	else:
-		print('locked users: %s' % (','.join(locked_users)))
+		print(f"locked users: {','.join(locked_users)}")
