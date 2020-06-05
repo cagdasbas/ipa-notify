@@ -4,6 +4,7 @@ Notify IPA Users for password expiration and locked users to admin
 2. Create a new virtual environment and install requirements.txt
 
 ```pip install -r requirements.txt```
+
 3. Run with required parameters. 
 
 ```bash
