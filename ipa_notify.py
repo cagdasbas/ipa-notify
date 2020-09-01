@@ -40,7 +40,8 @@ parser.add_argument('--admin', type=str, default='admin@domain.com',
                     help='admin user email to notify about locked users')
 parser.add_argument('--noop', type=bool, default=False, help='no operation mode. Do not send emails')
 
-parser.add_argument('--loglevel', type=str, choices=list(logging._levelToName.values()), default='INFO',
+parser.add_argument('--loglevel', dest='log_level', type=str, choices=list(logging._levelToName.values()),
+                    default='INFO',
                     help='log level')
 
 args = parser.parse_args()
