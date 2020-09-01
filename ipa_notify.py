@@ -4,11 +4,14 @@ import logging
 import subprocess
 import sys
 
+import requests
 from python_freeipa import Client
 from python_freeipa.exceptions import NotFound, Unauthorized
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from notifier import Notifier
 
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 parser = argparse.ArgumentParser(description='IPA Notifier')
 
 parser.add_argument('--server', type=str, default='ipa.domain.com', help='ipa server fqdn')
