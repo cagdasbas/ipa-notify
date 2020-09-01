@@ -1,3 +1,4 @@
+import logging
 import smtplib
 from email.message import EmailMessage
 
@@ -42,7 +43,7 @@ class Notifier:
 		try:
 			s.login(self.user, self.password)
 		except smtplib.SMTPException as e:
-			print(f"smtp auth error: {str(e)}")
+			logging.error(f"smtp auth error: {str(e)}")
 			return
 
 		s.send_message(msg)

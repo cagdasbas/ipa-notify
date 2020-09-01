@@ -1,6 +1,8 @@
 import argparse
 import datetime
+import logging
 import subprocess
+import sys
 
 from python_freeipa import Client
 from python_freeipa.exceptions import NotFound, Unauthorized
@@ -37,7 +39,16 @@ parser.add_argument('--smtp-from', dest='smtp_from', type=str, default='noreply@
 parser.add_argument('--admin', type=str, default='admin@domain.com',
                     help='admin user email to notify about locked users')
 parser.add_argument('--noop', type=bool, default=False, help='no operation mode. Do not send emails')
+
+parser.add_argument('--loglevel', type=str, choices=list(logging._levelToName.values()), default='INFO',
+                    help='log level')
+
 args = parser.parse_args()
+
+logging.basicConfig(
+	format='%(asctime)s - %(module)s.%(funcName)s - %(levelname)s - %(message)s',
+	level=getattr(logging, args.log_level, None)
+)
 
 admin_mail = args.admin
 limit_day = args.limit
@@ -50,7 +61,8 @@ client = Client(args.server, version='2.215', verify_ssl=args.verify_ssl)
 try:
 	client.login_kerberos()
 except Unauthorized as e:
-	print(f"login denied: {str(e)}")
+	logging.error(f"login denied: {str(e)}")
+	sys.exit(1)
 
 notifier = Notifier(host=args.smtp_host, port=args.smtp_port, user=args.smtp_user, password=args.smtp_pass,
                     from_email=args.smtp_from)
@@ -59,7 +71,7 @@ for group in args.groups:
 	try:
 		group_info = client.group_show(group)
 	except NotFound as e:
-		print(f"no group named {group}")
+		logging.error(f"no group named {group}")
 		continue
 
 	for user in group_info['member_user']:
@@ -73,13 +85,11 @@ for group in args.groups:
 		password_expire_date = datetime.datetime.strptime(password_expire_date, '%Y%m%d%H%M%SZ')
 		left_days = (password_expire_date - datetime.datetime.now()).days
 		if left_days <= limit_day:
+			logging.info(f"user {user['uid'][0]} expiration day left {left_days}")
 			if not args.noop:
 				notifier.notify_expiration(email, password_expire_date, left_days)
-			else:
-				print(f"user {user['uid'][0]} expiration day left {left_days}")
 
 if len(locked_users) != 0:
+	logging.info(f"locked users: {','.join(locked_users)}")
 	if not args.noop:
 		notifier.notify_locked_users(admin_mail, locked_users)
-	else:
-		print(f"locked users: {','.join(locked_users)}")
