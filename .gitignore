@@ -1,0 +1,6 @@
+*.kt
+.priv
+build
+dist
+*.egg-info
+venv
