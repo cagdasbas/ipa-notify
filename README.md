@@ -9,10 +9,8 @@ Notify IPA Users for password expiration and locked users to admin
 
 ```bash
 $ python ipa_notify.py --help
-usage: ipa_notify.py [-h] [--server SERVER] [--verify-ssl] [--no-verify-ssl]
-                    [--admin ADMIN] [--keytab KEYTAB]
-                    [--groups GROUPS [GROUPS ...]] [--limit LIMIT]
-                    [--noop NOOP]
+usage: ipa_notify.py [-h] [--server SERVER] [--verify-ssl] [--no-verify-ssl] [--principal PRINCIPAL] [--keytab KEYTAB] [--groups GROUPS [GROUPS ...]] [--limit LIMIT] [--smtp-host SMTP_HOST] [--smtp-port SMTP_PORT]
+                     [--smtp-user SMTP_USER] [--smtp-pass SMTP_PASS] [--smtp-from SMTP_FROM] [--admin ADMIN] [--noop NOOP] [--loglevel {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
 
 IPA Notifier
 
@@ -21,12 +19,25 @@ optional arguments:
   --server SERVER       ipa server fqdn
   --verify-ssl          verify ipa connection SSL cert (default)
   --no-verify-ssl       do not verify ipa connection SSL cert
-  --admin ADMIN         admin user email to notify about locked users
+  --principal PRINCIPAL
+                        user principal for kerberos authentication
   --keytab KEYTAB       keytab path
   --groups GROUPS [GROUPS ...]
                         list of user groups to check
   --limit LIMIT         number of days before notifying a user
+  --smtp-host SMTP_HOST
+                        smtp host for sending email
+  --smtp-port SMTP_PORT
+                        smtp port for sending email
+  --smtp-user SMTP_USER
+                        smtp user login
+  --smtp-pass SMTP_PASS
+                        smtp user password
+  --smtp-from SMTP_FROM
+                        smtp from email address
+  --admin ADMIN         admin user email to notify about locked users
   --noop NOOP           no operation mode. Do not send emails
-
+  --loglevel {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}
+                        log level
 
 ```
