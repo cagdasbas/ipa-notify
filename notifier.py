@@ -13,8 +13,13 @@ class Notifier:
 		self.from_email = from_email
 
 	def notify_expiration(self, to, date, days):
-		subject = f"Password will expire in {days} days"
-		body = f"Your password will expire on {date}"
+		if days > 0:
+			subject = f"Password will expire in {days} days"
+			body = f"Your password will expire on {date}"
+		else:
+			subject = f"Your password expired"
+			body = f"Your password expired on {date}"
+
 		self._send_email(to, subject, body)
 
 	def notify_locked_users(self, to, users):
