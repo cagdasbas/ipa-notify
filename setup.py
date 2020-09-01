@@ -24,7 +24,8 @@ def read_requirements(file_name):
 
 setup(
 	name='ipa-notify',
-	version='0.1.2',
+	version='0.1.3',
+	url='https://github.com/cagdasbas/ipa_notify',
 	python_requires='>=3.6',
 	description='FreeIPA password expriation and locked user notifier',
 	long_description=read_file('README.md'),
