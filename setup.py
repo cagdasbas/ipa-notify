@@ -24,8 +24,11 @@ def read_requirements(file_name):
 
 setup(
 	name='ipa-notify',
-	version='0.1',
+	version='0.1.2',
+	python_requires='>=3.6',
 	description='FreeIPA password expriation and locked user notifier',
+	long_description=read_file('README.md'),
+	long_description_content_type="text/markdown",
 	author='Cagdas Bas',
 	author_email='cagdasbs@gmail.com',
 	packages=find_packages("."),
@@ -35,5 +38,14 @@ setup(
 			"ipa-notify = ipa_notify.ipa_notify:main",
 		]
 	},
-	install_requires=read_requirements('requirements.txt')
+	install_requires=read_requirements('requirements.txt'),
+	classifiers=[
+		'Development Status :: 5 - Production/Stable',
+		'Intended Audience :: Developers',
+		'Natural Language :: English',
+		'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+		'Programming Language :: Python',
+		'Programming Language :: Python :: 3',
+		'Programming Language :: Python :: 3.8',
+	],
 )

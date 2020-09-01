@@ -1,14 +1,14 @@
 ### FreeIPA Notification
 Notify IPA Users for password expiration and locked users to admin
-1. Obtain a keytab and save it to a secure location with obtain_keytab.sh
-2. Create a new virtual environment and install requirements.txt
+1. Obtain a keytab with ```ipa-getkeytab```
+2. Run the command in ```noop``` mode for a successful user listing
+3. Create a script with proper permissions under ```/usr/local/sbin/```
+4. Add a crontab entry. For example ```0 0 *  *  * root ipa_notify.sh > /var/log/ipa_notify.log```
 
-```pip install -r requirements.txt```
 
-3. Run with required parameters. 
-
+#### Parameters:
 ```bash
-$ python ipa_notify.py --help
+$ ipa-notify --help
 usage: ipa_notify.py [-h] [--server SERVER] [--verify-ssl] [--no-verify-ssl] [--principal PRINCIPAL] [--keytab KEYTAB] [--groups GROUPS [GROUPS ...]] [--limit LIMIT] [--smtp-host SMTP_HOST] [--smtp-port SMTP_PORT]
                      [--smtp-user SMTP_USER] [--smtp-pass SMTP_PASS] [--smtp-from SMTP_FROM] [--admin ADMIN] [--noop NOOP] [--loglevel {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
 
