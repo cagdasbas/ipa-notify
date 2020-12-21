@@ -2,6 +2,8 @@ import os
 
 from setuptools import setup, find_packages
 
+from ipa_notify.release import __version__
+
 
 def read_file(file_name):
 	"""Read file and return its contents."""
@@ -24,7 +26,7 @@ def read_requirements(file_name):
 
 setup(
 	name='ipa-notify',
-	version='0.1.4',
+	version=__version__,
 	url='https://github.com/cagdasbas/ipa_notify',
 	python_requires='>=3.6',
 	description='FreeIPA password expriation and locked user notifier',
@@ -36,7 +38,7 @@ setup(
 	include_package_data=True,
 	entry_points={
 		"console_scripts": [
-			"ipa-notify = ipa_notify.ipa_notify:main",
+			"ipa-notify = ipa_notify.__main__:main",
 		]
 	},
 	install_requires=read_requirements('requirements.txt'),
