@@ -46,7 +46,7 @@ setup(
 		'Development Status :: 5 - Production/Stable',
 		'Intended Audience :: Developers',
 		'Natural Language :: English',
-		'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+		'License :: OSI Approved :: Apple Public Source License',
 		'Programming Language :: Python',
 		'Programming Language :: Python :: 3',
 		'Programming Language :: Python :: 3.6',
