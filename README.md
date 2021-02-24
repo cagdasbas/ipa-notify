@@ -1,4 +1,6 @@
 ### FreeIPA Notification
+[![Upload Python Package](https://github.com/cagdasbas/ipa-notify/actions/workflows/python-publish.yml/badge.svg)](https://github.com/cagdasbas/ipa-notify/actions/workflows/python-publish.yml)
+
 Notify IPA Users for password expiration and locked users to admin
 
 Required packages:
