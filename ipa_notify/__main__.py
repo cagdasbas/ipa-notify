@@ -28,11 +28,19 @@ def main():
 	locked_users = []
 
 	if not os.path.exists(args.keytab):
-		logging.error("Please obtain a keytab file with following command:")
-		logging.error("ipa-getkeytab -s ipa.domain.com -p admin@DOMAIN.COM -P -k ~/.priv/admin.kt")
+		logging.error("Cannot find keytab file %s", args.keytab)
 		sys.exit(2)
 
-	subprocess.call(f"/usr/bin/kinit {args.principal} -k -t {args.keytab}".split())
+	try:
+		p = subprocess.Popen(
+			f"/usr/bin/kinit {args.principal} -k -t {args.keytab}".split(), stdout=subprocess.PIPE,
+			stderr=subprocess.PIPE
+		)
+		if p.returncode is not None and p.returncode != 0:
+			logging.error("Cannot obtain kerberos ticket")
+			sys.exit(3)
+	except:
+		sys.exit(3)
 
 	client = ClientMeta(args.server, verify_ssl=args.verify_ssl)
 	try:
