@@ -1,2 +1,3 @@
 python-freeipa
 requests_kerberos
+requests_gssapi

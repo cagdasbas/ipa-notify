@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 import requests
-from python_freeipa import Client
+from python_freeipa.client_meta import ClientMeta
 from python_freeipa.exceptions import NotFound, Unauthorized
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
@@ -34,7 +34,7 @@ def main():
 
 	subprocess.call(f"/usr/bin/kinit {args.principal} -k -t {args.keytab}".split())
 
-	client = Client(args.server, version='2.215', verify_ssl=args.verify_ssl)
+	client = ClientMeta(args.server, verify_ssl=args.verify_ssl)
 	try:
 		client.login_kerberos()
 	except Unauthorized as e:
@@ -51,8 +51,8 @@ def main():
 			logging.error(f"no group named {group}")
 			continue
 
-		for user in group_info['member_user']:
-			user = client.user_show(user)
+		for user in group_info['result']['member_user']:
+			user = client.user_show(user, all=True)['result']
 			lock_status = user['nsaccountlock']
 			if lock_status:
 				locked_users.append(user)
