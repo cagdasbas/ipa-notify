@@ -1,5 +1,9 @@
 ### FreeIPA Notification
 Notify IPA Users for password expiration and locked users to admin
+
+Required packages:
+- krb5-devel
+
 1. Obtain a keytab with ```ipa-getkeytab```
 2. Run the command in ```noop``` mode for a successful user listing
 3. Create a script with proper permissions under ```/usr/local/sbin/```
