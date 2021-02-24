@@ -1,0 +1,5 @@
+[FORMAT]
+indent-string=\t
+
+[TYPECHECK]
+ignored-modules = requests

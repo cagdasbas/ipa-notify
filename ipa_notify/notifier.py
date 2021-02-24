@@ -18,52 +18,74 @@ from email.message import EmailMessage
 
 
 class Notifier:
+	"""
+	E-mail notification class
+	"""
 
-	def __init__(self, host, port, user, password, from_email):
+	# pylint: disable=too-many-arguments
+
+	def __init__(self, host: str, port: int, user: str, password: str, from_email: str):
 		self.host = host
 		self.port = port
 		self.user = user
 		self.password = password
 		self.from_email = from_email
 
-	def notify_expiration(self, to, date, days):
+	def notify_expiration(self, send_to: str, date: str, days: int) -> None:
+		"""
+		Expiration notification function
+		:param send_to: str. email address to send to
+		:param date: str. password expiration date
+		:param days: int. how many days until expiration
+		"""
 		if days > 0:
 			subject = f"Password will expire in {days} days"
 			body = f"Your password will expire on {date}"
 		else:
-			subject = f"Your password expired"
+			subject = "Your password expired"
 			body = f"Your password expired on {date}"
 
-		self._send_email(to, subject, body)
+		self._send_email(send_to, subject, body)
 
-	def notify_locked_users(self, to, users):
+	def notify_locked_users(self, send_to: str, users: list) -> None:
+		"""
+		Notify admin about locked out users
+		:param send_to: str. Admin e-mail address
+		:param users: list of str. locked out user list
+		"""
 		subject = "Locked Users"
 		body = "Following users are locked"
 		for user in users:
 			body += "\n" + user['uid'][0]
 
-		self._send_email(to, subject, body)
+		self._send_email(send_to, subject, body)
 
-	def _send_email(self, to, subject, body):
+	def _send_email(self, send_to: str, subject: str, body: str) -> None:
+		"""
+		Generic e-mail sender function
+		:param send_to: str. recipient email address
+		:param subject: str. email subject
+		:param body: str. email body
+		"""
 		msg = EmailMessage()
 
 		# me == the sender's email address
 		# you == the recipient's email address
 		msg['Subject'] = subject
 		msg['From'] = self.from_email
-		msg['To'] = to
+		msg['To'] = send_to
 
 		msg.set_content(body)
 
 		# Send the message via our own SMTP server.
-		s = smtplib.SMTP(self.host, self.port)
-		s.ehlo()
-		s.starttls()
+		smtp_conn = smtplib.SMTP(self.host, self.port)
+		smtp_conn.ehlo()
+		smtp_conn.starttls()
 		try:
-			s.login(self.user, self.password)
-		except smtplib.SMTPException as e:
-			logging.error(f"smtp auth error: {str(e)}")
+			smtp_conn.login(self.user, self.password)
+		except smtplib.SMTPException as err:
+			logging.error("smtp auth error: %s", err)
 			return
 
-		s.send_message(msg)
-		s.quit()
+		smtp_conn.send_message(msg)
+		smtp_conn.quit()

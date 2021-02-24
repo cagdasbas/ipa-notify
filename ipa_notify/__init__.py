@@ -16,9 +16,13 @@ import argparse
 import logging
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
+	"""
+	Parse cmdline arguments
+	:return: arguments
+	"""
 	parser = argparse.ArgumentParser(
-		f"ipa-notify",
+		"ipa-notify",
 		description="IPA Notifier",
 		formatter_class=argparse.ArgumentDefaultsHelpFormatter
 	)
@@ -34,7 +38,8 @@ def parse_args():
 	                    help='user principal for kerberos authentication')
 	parser.add_argument('--keytab', type=str, default='/tmp/user.kt', help='keytab path')
 
-	parser.add_argument('--groups', nargs='+', type=str, default=['users'], help='list of user groups to check')
+	parser.add_argument('--groups', nargs='+', type=str, default=['users'],
+	                    help='list of user groups to check')
 	parser.add_argument('--limit', type=int, default=5, help='number of days before notifying a user')
 
 	parser.add_argument('--smtp-host', dest='smtp_host', type=str, default='localhost',
@@ -50,10 +55,11 @@ def parse_args():
 
 	parser.add_argument('--admin', type=str, default='admin@domain.com',
 	                    help='admin user email to notify about locked users')
-	parser.add_argument('--noop', type=bool, default=False, help='no operation mode. Do not send emails')
+	parser.add_argument('--noop', type=bool, default=False,
+	                    help='no operation mode. Do not send emails')
 
-	parser.add_argument('--loglevel', dest='log_level', type=str, choices=list(logging._nameToLevel.keys()),
-	                    default='INFO',
+	parser.add_argument('--loglevel', dest='log_level', type=str,
+	                    choices=list(logging._nameToLevel.keys()), default='INFO',
 	                    help='log level')
 
 	args = parser.parse_args()
