@@ -4,7 +4,27 @@ Notify IPA Users for password expiration and locked users to admin
 Required packages:
 - krb5-devel
 
-1. Obtain a keytab with ```ipa-getkeytab```
+1. Create a new role for notifier
+   ```shell
+   ipa role-add --desc "Notification agent role" "Notification Agent"
+   ```
+2. Add privileges to the role
+   ```shell
+   ipa role-add-privilege "Notification Agent" --privileges="User Administrators"
+   ipa role-add-privilege "Notification Agent" --privileges="Group Administrators"
+   ipa role-add-privilege "Notification Agent" --privileges="Password Policy Readers"
+   ```
+3. Create a new service and assign the role to this service
+   ```shell
+   ipa service-add NOTIFY/ipa1.example.com
+   ipa role-add-member  "Notification Agent" --services="NOTIFY/ipa1.example.com@EXAMPLE.COM"
+   ipa service-allow-retrieve-keytab "NOTIFY/ipa1.example.com@EXAMPLE.COM" --hosts=ipa1.example.com
+   ```
+4. Obtain a keytab with fix permissions
+   ```shell
+   ipa-getkeytab -s ipa1.example.com -p "NOTIFY/ipa1.example.com@EXAMPLE.COM" -k ~/.priv/notify.keytab
+   chmod -R 600 ~/.priv
+   ```
 2. Run the command in ```noop``` mode for a successful user listing
 3. Create a script with proper permissions under ```/usr/local/sbin/```
 4. Add a crontab entry. For example ```0 0 *  *  * root ipa_notify.sh > /var/log/ipa_notify.log```
