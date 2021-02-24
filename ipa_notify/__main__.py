@@ -55,7 +55,17 @@ def main():
 			user = client.user_show(username, all=True)['result']
 			lock_status = user['nsaccountlock']
 			if lock_status:
-				locked_users.append(user)
+				continue
+
+			try:
+				pw_policy = client.pwpolicy_show(user=username)
+				user_status = client.user_status(username, all=True)
+				if int(user_status['result'][0]['krbloginfailedcount'][0]) >= \
+						int(pw_policy['result']['krbpwdmaxfailure'][0]):
+					logging.debug("account locked for %s", username)
+					locked_users.append(username)
+			except NotFound as e:
+				logging.error("password policy find error: %s", e)
 
 			email = user['mail'][0]
 			password_expire_date = user['krbpasswordexpiration'][0]['__datetime__']
