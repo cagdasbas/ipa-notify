@@ -51,8 +51,8 @@ def main():
 			logging.error(f"no group named {group}")
 			continue
 
-		for user in group_info['result']['member_user']:
-			user = client.user_show(user, all=True)['result']
+		for username in group_info['result']['member_user']:
+			user = client.user_show(username, all=True)['result']
 			lock_status = user['nsaccountlock']
 			if lock_status:
 				locked_users.append(user)
