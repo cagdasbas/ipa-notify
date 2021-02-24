@@ -89,6 +89,8 @@ def main():
 		if not args.noop:
 			notifier.notify_locked_users(admin_mail, locked_users)
 
+	subprocess.call(["kdestroy -A"])
+
 
 if __name__ == '__main__':
 	main()
