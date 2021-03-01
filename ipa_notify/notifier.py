@@ -14,6 +14,7 @@
 
 import logging
 import smtplib
+from datetime import datetime
 from email.message import EmailMessage
 
 
@@ -31,7 +32,7 @@ class Notifier:
 		self.password = password
 		self.from_email = from_email
 
-	def notify_expiration(self, send_to: str, date: str, days: int) -> None:
+	def notify_expiration(self, send_to: str, date: datetime, days: int) -> None:
 		"""
 		Expiration notification function
 		:param send_to: str. email address to send to

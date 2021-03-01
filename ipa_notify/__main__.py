@@ -52,7 +52,7 @@ def init(args: argparse.Namespace) -> tuple:
 		if process.returncode is not None and process.returncode != 0:
 			logging.error("Cannot obtain kerberos ticket")
 			sys.exit(3)
-	except subprocess.SubprocessError:
+	except ValueError:
 		sys.exit(3)
 
 	client = ClientMeta(args.server, verify_ssl=args.verify_ssl)
@@ -71,34 +71,35 @@ def init(args: argparse.Namespace) -> tuple:
 
 
 # pylint: disable=too-many-locals
-def main(args: argparse.Namespace, client: ClientMeta, notifier: Notifier):
+def main():
 	"""
 	Main application process.
 	Checks each user in given groups for password expiration
-	:param args: command line arguments
-	:param client: ipa client
-	:param notifier: email notifier
 	"""
+
+	args = parse_args()
+	ipa_client, email_notifier = init(args)
+
 	admin_mail = args.admin
 	limit_day = args.limit
 
 	locked_users = []
 	for group in args.groups:
 		try:
-			group_info = client.group_show(group)
+			group_info = ipa_client.group_show(group)
 		except NotFound:
 			logging.error("no group named %s", group)
 			continue
 
 		for username in group_info['result']['member_user']:
-			user = client.user_show(username, all=True)['result']
+			user = ipa_client.user_show(username, all=True)['result']
 			lock_status = user['nsaccountlock']
 			if lock_status:
 				continue
 
 			try:
-				pw_policy = client.pwpolicy_show(user=username)
-				user_status = client.user_status(username, all=True)
+				pw_policy = ipa_client.pwpolicy_show(user=username)
+				user_status = ipa_client.user_status(username, all=True)
 				if int(user_status['result'][0]['krbloginfailedcount'][0]) >= \
 						int(pw_policy['result']['krbpwdmaxfailure'][0]):
 					logging.debug("account locked for %s", username)
@@ -113,17 +114,15 @@ def main(args: argparse.Namespace, client: ClientMeta, notifier: Notifier):
 			if left_days <= limit_day:
 				logging.info("user %s expiration day left %d", user['uid'][0], left_days)
 				if not args.noop:
-					notifier.notify_expiration(email, password_expire_date, left_days)
+					email_notifier.notify_expiration(email, password_expire_date, left_days)
 
 	if len(locked_users) != 0:
 		logging.info("locked users: %s", locked_users)
 		if not args.noop:
-			notifier.notify_locked_users(admin_mail, locked_users)
+			email_notifier.notify_locked_users(admin_mail, locked_users)
 
 	subprocess.call(["/bin/kdestroy", "-A"])
 
 
 if __name__ == '__main__':
-	arguments = parse_args()
-	ipa_client, email_notifier = init(arguments)
-	main(arguments, ipa_client, email_notifier)
+	main()
