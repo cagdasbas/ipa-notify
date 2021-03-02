@@ -1,6 +1,10 @@
 *.kt
 .priv
+.tox
+htmlcov
 build
 dist
 *.egg-info
 venv
+.coverage
+coverage.xml
