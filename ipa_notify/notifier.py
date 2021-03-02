@@ -48,7 +48,7 @@ class Notifier:
 
 		self._send_email(send_to, subject, body)
 
-	def notify_locked_users(self, send_to: str, users: list) -> None:
+	def notify_locked_users(self, send_to: str, users: dict) -> None:
 		"""
 		Notify admin about locked out users
 		:param send_to: str. Admin e-mail address
@@ -56,8 +56,8 @@ class Notifier:
 		"""
 		subject = "Locked Users"
 		body = "Following users are locked"
-		for user in users:
-			body += "\n" + user['uid'][0]
+		for user, server_list in users.items():
+			body += f"\n{user} blocked on {', '.join(server_list)}"
 
 		self._send_email(send_to, subject, body)
 

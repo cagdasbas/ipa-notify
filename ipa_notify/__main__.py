@@ -83,7 +83,7 @@ def main():
 	admin_mail = args.admin
 	limit_day = args.limit
 
-	locked_users = []
+	locked_users = {}
 	for group in args.groups:
 		try:
 			group_info = ipa_client.group_show(group)
@@ -100,10 +100,14 @@ def main():
 			try:
 				pw_policy = ipa_client.pwpolicy_show(user=username)
 				user_status = ipa_client.user_status(username, all=True)
-				if int(user_status['result'][0]['krbloginfailedcount'][0]) >= \
-						int(pw_policy['result']['krbpwdmaxfailure'][0]):
-					logging.debug("account locked for %s", username)
-					locked_users.append(username)
+				for result in user_status['result']:
+					server = result['server']
+					is_failed = int(result['krbloginfailedcount'][0]) >= int(pw_policy['result']['krbpwdmaxfailure'][0])
+					if is_failed:
+						if username not in locked_users.keys():
+							locked_users[username] = []
+						locked_users[username].append(server)
+						logging.debug("account locked for %s in server %s", username, server)
 			except NotFound as err:
 				logging.error("password policy find error: %s", err)
 
@@ -116,7 +120,7 @@ def main():
 				if not args.noop:
 					email_notifier.notify_expiration(email, password_expire_date, left_days)
 
-	if len(locked_users) != 0:
+	if len(locked_users.keys()) != 0:
 		logging.info("locked users: %s", locked_users)
 		if not args.noop:
 			email_notifier.notify_locked_users(admin_mail, locked_users)
