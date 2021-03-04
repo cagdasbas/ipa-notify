@@ -66,7 +66,12 @@ def init(args: argparse.Namespace) -> IPAAdapter:
 		from_email=args.smtp_from,
 		template_env=template_env
 	)
-	ipa_adapter = IPAAdapter(args, notifier)
+
+	try:
+		ipa_adapter = IPAAdapter(args, notifier)
+	except ValueError as err:
+		logging.error("Error creating IPA Adapter: %s", err)
+		sys.exit(5)
 	return ipa_adapter
 
 
