@@ -18,7 +18,7 @@ from datetime import datetime
 from email.message import EmailMessage
 
 
-class Notifier:
+class EmailNotifier:
 	"""
 	E-mail notification class
 	"""

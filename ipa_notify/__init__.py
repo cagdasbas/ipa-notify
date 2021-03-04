@@ -55,10 +55,15 @@ def parse_args() -> argparse.Namespace:
 
 	parser.add_argument('--admin', type=str, default='admin@domain.com',
 	                    help='admin user email to notify about locked users')
-	parser.add_argument('--noop', type=bool, default=False,
+	parser.add_argument('--noop', action='store_true', default=False,
 	                    help='no operation mode. Do not send emails')
 
-	parser.add_argument('--loglevel', dest='log_level', type=str,
+	parser.add_argument('--check-expiration', action='store_true', default=False,
+	                    help='Check password expirations for users')
+	parser.add_argument('--check-locked', action='store_true', default=False,
+	                    help='Check locked out users')
+
+	parser.add_argument('--log-level', dest='log_level', type=str,
 	                    choices=list(logging._nameToLevel.keys()), default='INFO',
 	                    help='log level')
 
