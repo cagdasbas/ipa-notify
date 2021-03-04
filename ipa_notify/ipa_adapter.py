@@ -95,7 +95,7 @@ class IPAAdapter:
 			left_days = (password_expire_date - datetime.datetime.now()).days
 			if left_days <= self.limit_day:
 				logging.info("user %s expiration day left %d", user['uid'][0], left_days)
-				if self.noop:
+				if not self.noop:
 					self.notifier.notify_expiration(email, password_expire_date, left_days)
 
 	def _check_locked_users(self, users: list) -> None:
@@ -103,7 +103,7 @@ class IPAAdapter:
 		Check lock status of given users
 		:param users: user uid list
 		"""
-		locked_users = {}
+		locked_users = []
 		for username in users:
 			try:
 				pw_policy = self._client.pwpolicy_show(user=username)
@@ -115,17 +115,18 @@ class IPAAdapter:
 			if user_status['summary'].endswith("True"):
 				continue
 
+			blocked_servers = []
 			for result in user_status['result']:
 				server = result['server']
 				is_failed = int(result['krbloginfailedcount'][0]) >= int(
 					pw_policy['result']['krbpwdmaxfailure'][0])
 				if is_failed:
-					if username not in locked_users.keys():
-						locked_users[username] = []
-					locked_users[username].append(server)
+					blocked_servers.append(server)
 					logging.debug("account locked for %s in server %s", username, server)
+			if len(blocked_servers) != 0:
+				locked_users.append({'uid': username, 'servers': ', '.join(blocked_servers)})
 
-		if len(locked_users.keys()) != 0:
+		if len(locked_users) != 0:
 			logging.info("locked users: %s", locked_users)
 			if not self.noop:
 				self.notifier.notify_locked_users(self.admin_mail, locked_users)

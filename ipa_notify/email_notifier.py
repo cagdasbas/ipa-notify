@@ -12,10 +12,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import email
 import logging
 import smtplib
 from datetime import datetime
-from email.message import EmailMessage
+
+from jinja2 import Environment
 
 
 class EmailNotifier:
@@ -25,12 +27,13 @@ class EmailNotifier:
 
 	# pylint: disable=too-many-arguments
 
-	def __init__(self, host: str, port: int, user: str, password: str, from_email: str):
+	def __init__(self, host: str, port: int, user: str, password: str, from_email: str, template_env: Environment):
 		self.host = host
 		self.port = port
 		self.user = user
 		self.password = password
 		self.from_email = from_email
+		self.template_env = template_env
 
 	def notify_expiration(self, send_to: str, date: datetime, days: int) -> None:
 		"""
@@ -40,43 +43,34 @@ class EmailNotifier:
 		:param days: int. how many days until expiration
 		"""
 		if days > 0:
-			subject = f"Password will expire in {days} days"
-			body = f"Your password will expire on {date}"
+			email_message = self.template_env.get_template('expired_password.j2')
+			rendered_message = email_message.render(left_days=days, expire_date=date)
 		else:
-			subject = "Your password expired"
-			body = f"Your password expired on {date}"
+			email_message = self.template_env.get_template('expired_password.j2')
+			rendered_message = email_message.render(expire_date=date)
 
-		self._send_email(send_to, subject, body)
+		self._send_email(send_to, rendered_message)
 
-	def notify_locked_users(self, send_to: str, users: dict) -> None:
+	def notify_locked_users(self, send_to: str, users: list) -> None:
 		"""
 		Notify admin about locked out users
 		:param send_to: str. Admin e-mail address
 		:param users: list of str. locked out user list
 		"""
-		subject = "Locked Users"
-		body = "Following users are locked"
-		for user, server_list in users.items():
-			body += f"\n{user} blocked on {', '.join(server_list)}"
+		email_message = self.template_env.get_template('locked_users.j2')
+		rendered_message = email_message.render(users=users)
 
-		self._send_email(send_to, subject, body)
+		self._send_email(send_to, rendered_message)
 
-	def _send_email(self, send_to: str, subject: str, body: str) -> None:
+	def _send_email(self, send_to: str, email_content: str) -> None:
 		"""
 		Generic e-mail sender function
 		:param send_to: str. recipient email address
 		:param subject: str. email subject
 		:param body: str. email body
 		"""
-		msg = EmailMessage()
-
-		# me == the sender's email address
-		# you == the recipient's email address
-		msg['Subject'] = subject
-		msg['From'] = self.from_email
-		msg['To'] = send_to
-
-		msg.set_content(body)
+		email_msg_str = f"From: {self.from_email}\nTo: {send_to}\n" + email_content
+		msg = email.message_from_string(email_msg_str)
 
 		# Send the message via our own SMTP server.
 		smtp_conn = smtplib.SMTP(self.host, self.port)

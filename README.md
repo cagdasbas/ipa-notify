@@ -30,40 +30,55 @@ Required packages:
 2. Run the command in ```noop``` mode for a successful user listing
 3. Create a script with proper permissions under ```/usr/local/sbin/```
 4. Add a crontab entry. For example ```0 0 *  *  * root ipa_notify.sh > /var/log/ipa_notify.log```
+5. (Optional) You can create an email template folder and overwrite the message content. You can change the content but
+   do not change file names or variable names. Template should start with `Subject:` keyword and there has to be new
+   line between the subject and body. Please test your template before using.
 
+```shell
+$ python3 -c 'import ipa_notify;print(ipa_notify.__file__)'
+/usr/local/lib/python3.6/site-packages/ipa_notify/__init__.py
+$ cp -r /usr/local/lib/python3.6/site-packages/ipa_notify/templates ./mytemplates
+# edit the content
+$ ipa-notify ... --templates ./mytemplates
+```
 
 #### Parameters:
+
 ```bash
 $ ipa-notify --help
-usage: ipa_notify.py [-h] [--server SERVER] [--verify-ssl] [--no-verify-ssl] [--principal PRINCIPAL] [--keytab KEYTAB] [--groups GROUPS [GROUPS ...]] [--limit LIMIT] [--smtp-host SMTP_HOST] [--smtp-port SMTP_PORT]
-                     [--smtp-user SMTP_USER] [--smtp-pass SMTP_PASS] [--smtp-from SMTP_FROM] [--admin ADMIN] [--noop NOOP] [--loglevel {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}]
+usage: ipa-notify [-h] [--server SERVER] [--verify-ssl] [--no-verify-ssl] [--principal PRINCIPAL] [--keytab KEYTAB] [--groups GROUPS [GROUPS ...]] [--limit LIMIT] [--smtp-host SMTP_HOST] [--smtp-port SMTP_PORT]
+                  [--smtp-user SMTP_USER] [--smtp-pass SMTP_PASS] [--smtp-from SMTP_FROM] [--admin ADMIN] [--noop] [--check-expiration] [--check-locked] [--templates TEMPLATES]
+                  [--log-level {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}]
 
 IPA Notifier
 
 optional arguments:
   -h, --help            show this help message and exit
-  --server SERVER       ipa server fqdn
-  --verify-ssl          verify ipa connection SSL cert (default)
-  --no-verify-ssl       do not verify ipa connection SSL cert
+  --server SERVER       ipa server fqdn (default: ipa.domain.com)
+  --verify-ssl          verify ipa connection SSL cert (default) (default: True)
+  --no-verify-ssl       do not verify ipa connection SSL cert (default: True)
   --principal PRINCIPAL
-                        user principal for kerberos authentication
-  --keytab KEYTAB       keytab path
+                        user principal for kerberos authentication (default: admin@DOMAIN.COM)
+  --keytab KEYTAB       keytab path (default: /tmp/user.kt)
   --groups GROUPS [GROUPS ...]
-                        list of user groups to check
-  --limit LIMIT         number of days before notifying a user
+                        list of user groups to check (default: ['users'])
+  --limit LIMIT         number of days before notifying a user (default: 5)
   --smtp-host SMTP_HOST
-                        smtp host for sending email
+                        smtp host for sending email (default: localhost)
   --smtp-port SMTP_PORT
-                        smtp port for sending email
+                        smtp port for sending email (default: 587)
   --smtp-user SMTP_USER
-                        smtp user login
+                        smtp user login (default: smtp_user)
   --smtp-pass SMTP_PASS
-                        smtp user password
+                        smtp user password (default: smtp_pass)
   --smtp-from SMTP_FROM
-                        smtp from email address
-  --admin ADMIN         admin user email to notify about locked users
-  --noop NOOP           no operation mode. Do not send emails
-  --loglevel {CRITICAL,ERROR,WARNING,INFO,DEBUG,NOTSET}
-                        log level
-
+                        smtp from email address (default: noreply@domain.com)
+  --admin ADMIN         admin user email to notify about locked users (default: admin@domain.com)
+  --noop                no operation mode. Do not send emails (default: False)
+  --check-expiration    Check password expirations for users (default: False)
+  --check-locked        Check locked out users (default: False)
+  --templates TEMPLATES
+                        Custom email template folder (default: )
+  --log-level {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}
+                        log level (default: INFO)
 ```

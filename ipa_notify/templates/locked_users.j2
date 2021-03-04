@@ -1,0 +1,6 @@
+Subject: Locked Users
+
+Following users are locked
+{% for user in users %}
+{{ user.uid }} on {{ user.servers }}
+{% endfor %}

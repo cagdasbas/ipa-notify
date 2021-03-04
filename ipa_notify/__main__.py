@@ -17,6 +17,7 @@ import os
 import sys
 
 import requests
+from jinja2 import Environment, PackageLoader, ChoiceLoader, FileSystemLoader
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from ipa_notify import parse_args
@@ -48,10 +49,22 @@ def init(args: argparse.Namespace) -> IPAAdapter:
 		logging.error("Cannot find keytab file %s", args.keytab)
 		sys.exit(2)
 
+	loaders = []
+	if os.path.isdir(args.templates):
+		loaders.append(FileSystemLoader(args.templates))
+	else:
+		logging.error("Given path for templates is not a folder, continuing with default templates")
+
+	loaders.append(PackageLoader('ipa_notify', 'templates'))
+	template_env = Environment(
+		loader=ChoiceLoader(loaders)
+	)
+
 	notifier = EmailNotifier(
 		host=args.smtp_host, port=args.smtp_port,
 		user=args.smtp_user, password=args.smtp_pass,
-		from_email=args.smtp_from
+		from_email=args.smtp_from,
+		template_env=template_env
 	)
 	ipa_adapter = IPAAdapter(args, notifier)
 	return ipa_adapter
@@ -67,7 +80,7 @@ def main():
 	args = parse_args()
 	init_logging(args.log_level)
 
-	if not args.check_expiration and not args.check_expiration:
+	if not args.check_expiration and not args.check_locked:
 		logging.error("You should at least enable one check")
 		sys.exit(4)
 

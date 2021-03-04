@@ -63,6 +63,9 @@ def parse_args() -> argparse.Namespace:
 	parser.add_argument('--check-locked', action='store_true', default=False,
 	                    help='Check locked out users')
 
+	parser.add_argument('--templates', type=str, default='',
+	                    help="Custom email template folder")
+
 	parser.add_argument('--log-level', dest='log_level', type=str,
 	                    choices=list(logging._nameToLevel.keys()), default='INFO',
 	                    help='log level')
