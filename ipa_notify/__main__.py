@@ -50,10 +50,11 @@ def init(args: argparse.Namespace) -> IPAAdapter:
 		sys.exit(2)
 
 	loaders = []
-	if os.path.isdir(args.templates):
-		loaders.append(FileSystemLoader(args.templates))
-	else:
-		logging.error("Given path for templates is not a folder, continuing with default templates")
+	if args.templates != '':
+		if os.path.isdir(args.templates):
+			loaders.append(FileSystemLoader(args.templates))
+		else:
+			logging.error("Given path for templates is not a folder, continuing with default templates")
 
 	loaders.append(PackageLoader('ipa_notify', 'templates'))
 	template_env = Environment(
