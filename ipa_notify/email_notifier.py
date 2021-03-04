@@ -73,14 +73,20 @@ class EmailNotifier:
 		msg = email.message_from_string(email_msg_str)
 
 		# Send the message via our own SMTP server.
-		smtp_conn = smtplib.SMTP(self.host, self.port)
-		smtp_conn.ehlo()
-		smtp_conn.starttls()
 		try:
-			smtp_conn.login(self.user, self.password)
-		except smtplib.SMTPException as err:
-			logging.error("smtp auth error: %s", err)
+			smtp_conn = smtplib.SMTP(self.host, self.port)
+		except smtplib.SMTPConnectError as err:
+			logging.error("error connecting SMTP server: %s", err)
 			return
 
-		smtp_conn.send_message(msg)
-		smtp_conn.quit()
+		try:
+			smtp_conn.ehlo()
+			smtp_conn.starttls()
+			smtp_conn.login(self.user, self.password)
+
+			smtp_conn.send_message(msg)
+		except smtplib.SMTPException as err:
+			logging.error("SMTP Error: %s", err)
+			return
+		finally:
+			smtp_conn.quit()
