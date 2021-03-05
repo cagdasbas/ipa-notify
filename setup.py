@@ -35,6 +35,7 @@ setup(
 	author='Cagdas Bas',
 	author_email='cagdasbs@gmail.com',
 	packages=find_packages("."),
+	package_data={'ipa_notify': ["templates/*.j2"]},
 	include_package_data=True,
 	entry_points={
 		"console_scripts": [
