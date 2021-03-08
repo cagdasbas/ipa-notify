@@ -47,7 +47,7 @@ $ ipa-notify ... --templates ./mytemplates
 ```bash
 $ ipa-notify --help
 usage: ipa-notify [-h] [--server SERVER] [--verify-ssl] [--no-verify-ssl] [--principal PRINCIPAL] [--keytab KEYTAB] [--groups GROUPS [GROUPS ...]] [--limit LIMIT] [--smtp-host SMTP_HOST] [--smtp-port SMTP_PORT]
-                  [--smtp-user SMTP_USER] [--smtp-pass SMTP_PASS] [--smtp-from SMTP_FROM] [--admin ADMIN] [--noop] [--check-expiration] [--check-locked] [--templates TEMPLATES]
+                  [--smtp-security {none,STARTTLS,SSL}] [--smtp-user SMTP_USER] [--smtp-pass SMTP_PASS] [--smtp-from SMTP_FROM] [--admin ADMIN] [--noop] [--check-expiration] [--check-locked] [--templates TEMPLATES]
                   [--log-level {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}]
 
 IPA Notifier
@@ -66,7 +66,9 @@ optional arguments:
   --smtp-host SMTP_HOST
                         smtp host for sending email (default: localhost)
   --smtp-port SMTP_PORT
-                        smtp port for sending email (default: 587)
+                        smtp port for sending email (default: 465)
+  --smtp-security {none,STARTTLS,SSL}
+                        smtp port for sending email (default: SSL)
   --smtp-user SMTP_USER
                         smtp user login (default: smtp_user)
   --smtp-pass SMTP_PASS
