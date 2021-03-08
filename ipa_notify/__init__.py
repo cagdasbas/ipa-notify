@@ -46,6 +46,10 @@ def parse_args() -> argparse.Namespace:
 	                    help='smtp host for sending email')
 	parser.add_argument('--smtp-port', dest='smtp_port', type=int, default=587,
 	                    help='smtp port for sending email')
+	parser.add_argument('--smtp-security', dest='smtp_security', type=str, default="SSL",
+	                    choices=["none", "STARTTLS", "SSL"],
+	                    help='smtp port for sending email')
+
 	parser.add_argument('--smtp-user', dest='smtp_user', type=str, default='smtp_user',
 	                    help='smtp user login')
 	parser.add_argument('--smtp-pass', dest='smtp_pass', type=str, default='smtp_pass',

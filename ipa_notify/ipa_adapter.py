@@ -96,7 +96,11 @@ class IPAAdapter:
 			if left_days <= self.limit_day:
 				logging.info("user %s expiration day left %d", user['uid'][0], left_days)
 				if not self.noop:
-					self.notifier.notify_expiration(email, password_expire_date, left_days)
+					try:
+						self.notifier.notify_expiration(email, password_expire_date, left_days)
+					except ValueError:
+						logging.error("email send error, aborting...")
+						break
 
 	def _check_locked_users(self, users: list) -> None:
 		"""
@@ -129,4 +133,7 @@ class IPAAdapter:
 		if len(locked_users) != 0:
 			logging.info("locked users: %s", locked_users)
 			if not self.noop:
-				self.notifier.notify_locked_users(self.admin_mail, locked_users)
+				try:
+					self.notifier.notify_locked_users(self.admin_mail, locked_users)
+				except ValueError:
+					logging.error("email send error, aborting...")

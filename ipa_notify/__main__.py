@@ -62,7 +62,7 @@ def init(args: argparse.Namespace) -> IPAAdapter:
 	)
 
 	notifier = EmailNotifier(
-		host=args.smtp_host, port=args.smtp_port,
+		host=args.smtp_host, port=args.smtp_port, security=args.smtp_security,
 		user=args.smtp_user, password=args.smtp_pass,
 		from_email=args.smtp_from,
 		template_env=template_env

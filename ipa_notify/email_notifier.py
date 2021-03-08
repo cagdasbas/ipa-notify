@@ -27,9 +27,11 @@ class EmailNotifier:
 
 	# pylint: disable=too-many-arguments
 
-	def __init__(self, host: str, port: int, user: str, password: str, from_email: str, template_env: Environment):
+	def __init__(self, host: str, port: int, security: str, user: str, password: str, from_email: str,
+	             template_env: Environment):
 		self.host = host
 		self.port = port
+		self.security = security
 		self.user = user
 		self.password = password
 		self.from_email = from_email
@@ -74,19 +76,28 @@ class EmailNotifier:
 
 		# Send the message via our own SMTP server.
 		try:
-			smtp_conn = smtplib.SMTP(self.host, self.port)
-		except smtplib.SMTPConnectError as err:
+			if self.security == "SSL":
+				import ssl
+				context = ssl.create_default_context()
+				smtp_conn = smtplib.SMTP_SSL(self.host, self.port, context=context)
+			else:
+				smtp_conn = smtplib.SMTP(self.host, self.port)
+		except (smtplib.SMTPConnectError, smtplib.SMTPServerDisconnected) as err:
 			logging.error("error connecting SMTP server: %s", err)
-			return
+			raise ValueError()
+		except ssl.SSLError as err:
+			logging.error("SSL connection error %s", err)
+			raise ValueError()
 
 		try:
 			smtp_conn.ehlo()
-			smtp_conn.starttls()
+			if self.security == "STARTTLS":
+				smtp_conn.starttls()
 			smtp_conn.login(self.user, self.password)
 
 			smtp_conn.send_message(msg)
 		except smtplib.SMTPException as err:
 			logging.error("SMTP Error: %s", err)
-			return
+			raise ValueError()
 		finally:
 			smtp_conn.quit()
