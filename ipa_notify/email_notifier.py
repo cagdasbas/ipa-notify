@@ -15,6 +15,7 @@
 import email
 import logging
 import smtplib
+import ssl
 from datetime import datetime
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
@@ -93,7 +94,6 @@ class EmailNotifier:
 		# Send the message via our own SMTP server.
 		try:
 			if self.security == "SSL":
-				import ssl
 				context = ssl.create_default_context()
 				smtp_conn = smtplib.SMTP_SSL(self.host, self.port, context=context)
 			else:
