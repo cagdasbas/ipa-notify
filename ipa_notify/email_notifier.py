@@ -16,6 +16,9 @@ import email
 import logging
 import smtplib
 from datetime import datetime
+from email.header import Header
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from jinja2 import Environment
 
@@ -45,7 +48,7 @@ class EmailNotifier:
 		:param days: int. how many days until expiration
 		"""
 		if days > 0:
-			email_message = self.template_env.get_template('expired_password.j2')
+			email_message = self.template_env.get_template('expiring_password.j2')
 			rendered_message = email_message.render(left_days=days, expire_date=date)
 		else:
 			email_message = self.template_env.get_template('expired_password.j2')
@@ -71,8 +74,21 @@ class EmailNotifier:
 		:param subject: str. email subject
 		:param body: str. email body
 		"""
-		email_msg_str = f"From: {self.from_email}\nTo: {send_to}\n" + email_content
-		msg = email.message_from_string(email_msg_str)
+		msg = email.message_from_string(email_content)
+
+		msg_to_send = MIMEMultipart("alternative")
+		msg_to_send.set_charset('utf8')
+
+		msg_to_send['From'] = self.from_email
+		msg_to_send['To'] = send_to
+
+		msg_to_send['Subject'] = Header(
+			msg['subject'].encode('utf-8'),
+			'UTF-8'
+		).encode()
+
+		msg_body = MIMEText(msg.get_payload().encode('utf-8'), 'html', 'UTF-8')
+		msg_to_send.attach(msg_body)
 
 		# Send the message via our own SMTP server.
 		try:
@@ -99,7 +115,8 @@ class EmailNotifier:
 			smtp_conn.login(self.user, self.password)
 			logging.debug("smtp login successful")
 
-			smtp_conn.send_message(msg)
+			smtp_conn.send_message(msg_to_send)
+			logging.debug("smtp message is sent")
 		except smtplib.SMTPException as err:
 			logging.error("SMTP Error: %s", err)
 			raise ValueError()
