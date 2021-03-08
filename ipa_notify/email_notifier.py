@@ -82,6 +82,7 @@ class EmailNotifier:
 				smtp_conn = smtplib.SMTP_SSL(self.host, self.port, context=context)
 			else:
 				smtp_conn = smtplib.SMTP(self.host, self.port)
+			logging.debug("smtp connection is created.")
 		except (smtplib.SMTPConnectError, smtplib.SMTPServerDisconnected) as err:
 			logging.error("error connecting SMTP server: %s", err)
 			raise ValueError()
@@ -91,9 +92,12 @@ class EmailNotifier:
 
 		try:
 			smtp_conn.ehlo()
+			logging.debug("ehlo is sent")
 			if self.security == "STARTTLS":
 				smtp_conn.starttls()
+				logging.debug("starttls is started")
 			smtp_conn.login(self.user, self.password)
+			logging.debug("smtp login successful")
 
 			smtp_conn.send_message(msg)
 		except smtplib.SMTPException as err:
