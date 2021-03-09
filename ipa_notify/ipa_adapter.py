@@ -18,7 +18,7 @@ import logging
 import subprocess
 
 from python_freeipa.client_meta import ClientMeta
-from python_freeipa.exceptions import Unauthorized, NotFound
+from python_freeipa.exceptions import Unauthorized, NotFound, FreeIPAError
 
 from ipa_notify.email_notifier import EmailNotifier
 
@@ -57,7 +57,10 @@ class IPAAdapter:
 		self.notifier = notifier
 
 	def __del__(self):
-		self._client.logout()
+		try:
+			self._client.logout()
+		except (FreeIPAError, ValueError):
+			pass
 		logging.debug("client logged out")
 		subprocess.call(["/bin/kdestroy", "-A"])
 		logging.debug("ticket is destroyed")
@@ -89,6 +92,8 @@ class IPAAdapter:
 			if lock_status:
 				continue
 
+			if "mail" not in user.keys():
+				continue
 			email = user['mail'][0]
 			password_expire_date = user['krbpasswordexpiration'][0]['__datetime__']
 			password_expire_date = datetime.datetime.strptime(password_expire_date, '%Y%m%d%H%M%SZ')
