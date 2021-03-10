@@ -117,6 +117,9 @@ class EmailNotifier:
 
 			smtp_conn.send_message(msg_to_send)
 			logging.debug("smtp message is sent")
+		except smtplib.SMTPRecipientsRefused as err:
+			logging.error("error sending to %s error: %s", send_to, err)
+			return
 		except smtplib.SMTPException as err:
 			logging.error("SMTP Error: %s", err)
 			raise ValueError()
