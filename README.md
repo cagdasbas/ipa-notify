@@ -5,6 +5,8 @@ Notify IPA Users for password expiration and locked users to admin
 
 Required packages:
 - krb5-devel
+- python3-pip
+- python3-virtualenv (Optional)
 
 1. Create a new role for notifier
    ```shell
@@ -27,12 +29,28 @@ Required packages:
    ipa-getkeytab -s ipa1.example.com -p "NOTIFY/ipa1.example.com@EXAMPLE.COM" -k ~/.priv/notify.keytab
    chmod -R 600 ~/.priv
    ```
-2. Run the command in ```noop``` mode for a successful user listing
-3. Create a script with proper permissions under ```/usr/local/sbin/```
-4. Add a crontab entry. For example ```0 0 *  *  * root ipa_notify.sh > /var/log/ipa_notify.log```
-5. (Optional) You can create an email template folder and overwrite the message content. You can change the content but
-   do not change file names or variable names. Template should start with `Subject:` keyword and there has to be new
-   line between the subject and body. Please test your template before using.
+5. (Optional) Create a new virtual env and activate it
+   ```shell
+   mkdir /opt/ipa-notify
+   virtualenv -p python3 /opt/ipa-notify/venv
+   source /opt/ipa-notify/venv/bin/activate
+	```
+
+6. Install this package:
+   ```shell
+   pip3 install ipa-notify
+   ```
+7. Run the command in ```noop``` mode for a successful user listing
+   ```shell
+   /opt/ipa-notify/bin/ipa-notify --server ipa1.example.com -p "NOTIFY/ipa1.example.com@EXAMPLE.COM" -k ~/.priv/notify.keytab \
+   --limit 10 --groups users --check-expiration --noop
+   ```
+
+8. Create a script includes the command with your parameters with proper permissions under ```/usr/local/sbin/```
+9. Add a crontab entry. For example ```0 0 *  *  * root /usr/local/sbin/ipa_notify.sh &>> /var/log/ipa_notify.log```
+10. (Optional) You can create an email template folder and overwrite the message content. You can change the content but
+    do not change file names or variable names. Template should start with `Subject:` keyword and there has to be new
+    line between the subject and body. Please test your template before using.
 
 ```shell
 $ python3 -c 'import ipa_notify;print(ipa_notify.__file__)'
