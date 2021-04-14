@@ -19,6 +19,7 @@ import subprocess
 
 from python_freeipa.client_meta import ClientMeta
 from python_freeipa.exceptions import Unauthorized, NotFound, FreeIPAError
+from requests.exceptions import SSLError
 
 from ipa_notify.email_notifier import EmailNotifier
 
@@ -59,7 +60,7 @@ class IPAAdapter:
 	def __del__(self):
 		try:
 			self._client.logout()
-		except (FreeIPAError, ValueError):
+		except (FreeIPAError, SSLError, ValueError):
 			pass
 		logging.debug("client logged out")
 		subprocess.call(["/bin/kdestroy", "-A"])
