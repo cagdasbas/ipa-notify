@@ -48,7 +48,7 @@ class IPAAdapter:
 			logging.error("login denied: %s", err)
 			raise ValueError("login denied: %s" % err)
 
-		self.admin_mail = args.admin
+		self.admin_mails = args.admins
 		self.limit_day = args.limit
 
 		self.check_expiration = args.check_expiration
@@ -139,7 +139,8 @@ class IPAAdapter:
 		if len(locked_users) != 0:
 			logging.info("locked users: %s", locked_users)
 			if not self.noop:
-				try:
-					self.notifier.notify_locked_users(self.admin_mail, locked_users)
-				except ValueError:
-					logging.error("email send error, aborting...")
+				for admin in self.admin_mails:
+					try:
+						self.notifier.notify_locked_users(admin, locked_users)
+					except ValueError:
+						logging.error("email send error to %s, aborting...", admin)

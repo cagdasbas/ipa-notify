@@ -65,7 +65,7 @@ $ ipa-notify ... --templates ./mytemplates
 ```bash
 $ ipa-notify --help
 usage: ipa-notify [-h] [--server SERVER] [--verify-ssl] [--no-verify-ssl] [--principal PRINCIPAL] [--keytab KEYTAB] [--groups GROUPS [GROUPS ...]] [--limit LIMIT] [--smtp-host SMTP_HOST] [--smtp-port SMTP_PORT]
-                  [--smtp-security {none,STARTTLS,SSL}] [--smtp-user SMTP_USER] [--smtp-pass SMTP_PASS] [--smtp-from SMTP_FROM] [--admin ADMIN] [--noop] [--check-expiration] [--check-locked] [--templates TEMPLATES]
+                  [--smtp-security {none,STARTTLS,SSL}] [--smtp-user SMTP_USER] [--smtp-pass SMTP_PASS] [--smtp-from SMTP_FROM] [--admin ADMIN [ADMIN ...]] [--noop] [--check-expiration] [--check-locked] [--templates TEMPLATES]
                   [--log-level {CRITICAL,FATAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}]
 
 IPA Notifier
@@ -93,7 +93,8 @@ optional arguments:
                         smtp user password (default: smtp_pass)
   --smtp-from SMTP_FROM
                         smtp from email address (default: noreply@domain.com)
-  --admin ADMIN         admin user email to notify about locked users (default: admin@domain.com)
+  --admin ADMIN [ADMIN ...]
+                        admin user(s) email(s) to notify about locked users (default: admin@domain.com)
   --noop                no operation mode. Do not send emails (default: False)
   --check-expiration    Check password expirations for users (default: False)
   --check-locked        Check locked out users (default: False)
