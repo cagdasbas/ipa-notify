@@ -57,7 +57,7 @@ def parse_args() -> argparse.Namespace:
 	parser.add_argument('--smtp-from', dest='smtp_from', type=str, default='noreply@domain.com',
 	                    help='smtp from email address')
 
-	parser.add_argument('--admin', nargs='+', default='admin@domain.com',
+	parser.add_argument('--admins', nargs='+', default='admin@domain.com',
 	                    help='admin user(s) email(s) to notify about locked users')
 	parser.add_argument('--noop', action='store_true', default=False,
 	                    help='no operation mode. Do not send emails')
