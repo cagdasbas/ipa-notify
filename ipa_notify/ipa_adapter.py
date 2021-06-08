@@ -96,6 +96,8 @@ class IPAAdapter:
 			if "mail" not in user.keys():
 				continue
 			email = user['mail'][0]
+			if "krbpasswordexpiration" not in user.keys():
+				continue
 			password_expire_date = user['krbpasswordexpiration'][0]['__datetime__']
 			password_expire_date = datetime.datetime.strptime(password_expire_date, '%Y%m%d%H%M%SZ')
 			left_days = (password_expire_date - datetime.datetime.now()).days
