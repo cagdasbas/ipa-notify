@@ -112,8 +112,9 @@ class EmailNotifier:
 			if self.security == "STARTTLS":
 				smtp_conn.starttls()
 				logging.debug("starttls is started")
-			smtp_conn.login(self.user, self.password)
-			logging.debug("smtp login successful")
+			if self.user != "" and self.password != "":  # don't try to login if no username/password is supplied
+				smtp_conn.login(self.user, self.password)
+				logging.debug("smtp login successful")
 
 			smtp_conn.send_message(msg_to_send)
 			logging.debug("smtp message is sent")
