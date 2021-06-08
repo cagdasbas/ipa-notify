@@ -84,13 +84,13 @@ optional arguments:
   --smtp-host SMTP_HOST
                         smtp host for sending email (default: localhost)
   --smtp-port SMTP_PORT
-                        smtp port for sending email (default: 465)
+                        smtp port for sending email (default: 25)
   --smtp-security {none,STARTTLS,SSL}
-                        smtp port for sending email (default: SSL)
+                        smtp port for sending email (default: none)
   --smtp-user SMTP_USER
-                        smtp user login (default: smtp_user)
+                        smtp user login (default: )
   --smtp-pass SMTP_PASS
-                        smtp user password (default: smtp_pass)
+                        smtp user password (default: )
   --smtp-from SMTP_FROM
                         smtp from email address (default: noreply@domain.com)
   --admins ADMINS [ADMINS ...]

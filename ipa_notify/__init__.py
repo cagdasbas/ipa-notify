@@ -44,15 +44,15 @@ def parse_args() -> argparse.Namespace:
 
 	parser.add_argument('--smtp-host', dest='smtp_host', type=str, default='localhost',
 	                    help='smtp host for sending email')
-	parser.add_argument('--smtp-port', dest='smtp_port', type=int, default=465,
+	parser.add_argument('--smtp-port', dest='smtp_port', type=int, default=25,
 	                    help='smtp port for sending email')
-	parser.add_argument('--smtp-security', dest='smtp_security', type=str, default="SSL",
+	parser.add_argument('--smtp-security', dest='smtp_security', type=str, default="none",
 	                    choices=["none", "STARTTLS", "SSL"],
 	                    help='smtp port for sending email')
 
-	parser.add_argument('--smtp-user', dest='smtp_user', type=str, default='smtp_user',
+	parser.add_argument('--smtp-user', dest='smtp_user', type=str, default='',
 	                    help='smtp user login')
-	parser.add_argument('--smtp-pass', dest='smtp_pass', type=str, default='smtp_pass',
+	parser.add_argument('--smtp-pass', dest='smtp_pass', type=str, default='',
 	                    help='smtp user password')
 	parser.add_argument('--smtp-from', dest='smtp_from', type=str, default='noreply@domain.com',
 	                    help='smtp from email address')
