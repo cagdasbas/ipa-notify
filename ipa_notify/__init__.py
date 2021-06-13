@@ -64,6 +64,8 @@ def parse_args() -> argparse.Namespace:
 
 	parser.add_argument('--check-expiration', action='store_true', default=False,
 	                    help='Check password expirations for users')
+	parser.add_argument('--no-expired', action='store_true', default=False,
+	                    help='Don''t send a notification after the user password expired')
 	parser.add_argument('--check-locked', action='store_true', default=False,
 	                    help='Check locked out users')
 

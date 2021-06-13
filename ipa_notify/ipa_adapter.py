@@ -50,6 +50,7 @@ class IPAAdapter:
 
 		self.admin_mails = args.admins
 		self.limit_day = args.limit
+		self.no_expired = args.no_expired
 
 		self.check_expiration = args.check_expiration
 		self.check_locked = args.check_locked
@@ -103,6 +104,9 @@ class IPAAdapter:
 			left_days = (password_expire_date - datetime.datetime.now()).days
 			if left_days <= self.limit_day:
 				logging.info("user %s expiration day left %d", user['uid'][0], left_days)
+				if self.no_expired and left_days < 0:
+					logging.info("No expired is enabled, skipping user")
+					continue
 				if not self.noop:
 					try:
 						self.notifier.notify_expiration(email, password_expire_date, left_days)
