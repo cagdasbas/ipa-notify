@@ -41,19 +41,21 @@ class EmailNotifier:
 		self.from_email = from_email
 		self.template_env = template_env
 
-	def notify_expiration(self, send_to: str, date: datetime, days: int) -> None:
+	def notify_expiration(self, *, send_to: str, name: str, surname: str, date: datetime, days: int) -> None:
 		"""
 		Expiration notification function
 		:param send_to: str. email address to send to
+		:param name: str. name to notify
+		:param surname: str. surname to notify
 		:param date: str. password expiration date
 		:param days: int. how many days until expiration
 		"""
 		if days > 0:
 			email_message = self.template_env.get_template('expiring_password.j2')
-			rendered_message = email_message.render(left_days=days, expire_date=date)
+			rendered_message = email_message.render(left_days=days, expire_date=date, name=name, surname=surname)
 		else:
 			email_message = self.template_env.get_template('expired_password.j2')
-			rendered_message = email_message.render(expire_date=date)
+			rendered_message = email_message.render(expire_date=date, name=name, surname=surname)
 
 		self._send_email(send_to, rendered_message)
 

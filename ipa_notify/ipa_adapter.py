@@ -16,7 +16,6 @@ import argparse
 import datetime
 import logging
 import subprocess
-
 from python_freeipa.client_meta import ClientMeta
 from python_freeipa.exceptions import Unauthorized, NotFound, FreeIPAError
 from requests.exceptions import SSLError
@@ -97,6 +96,9 @@ class IPAAdapter:
 			if "mail" not in user.keys():
 				continue
 			email = user['mail'][0]
+			name = user['name'][0]
+			surname = user['surname'][0]
+
 			if "krbpasswordexpiration" not in user.keys():
 				continue
 			password_expire_date = user['krbpasswordexpiration'][0]['__datetime__']
@@ -109,7 +111,10 @@ class IPAAdapter:
 					continue
 				if not self.noop:
 					try:
-						self.notifier.notify_expiration(email, password_expire_date, left_days)
+						self.notifier.notify_expiration(
+							send_to=email, date=password_expire_date, days=left_days,
+							name=name, surname=surname
+						)
 					except ValueError:
 						logging.error("email send error, aborting...")
 						break
